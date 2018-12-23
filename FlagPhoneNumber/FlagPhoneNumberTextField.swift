@@ -54,13 +54,19 @@ open class FPNTextField: UITextField, UITextFieldDelegate, FPNCountryPickerDeleg
 			phoneCodeTextField.textColor = textColor
 		}
 	}
+    
+    open var placeholderColor: UIColor = UIColor.lightGray {
+        didSet {
+            updatePlaceholder()
+        }
+    }
 
 	/// Present in the placeholder an example of a phone number according to the selected country code.
 	/// If false, you can set your own placeholder. Set to true by default.
 	public var hasPhoneNumberExample: Bool = true {
 		didSet {
 			if hasPhoneNumberExample == false {
-				placeholder = nil
+				attributedPlaceholder = nil
 			}
 			updatePlaceholder()
 		}
@@ -373,15 +379,18 @@ open class FPNTextField: UITextField, UITextFieldDelegate, FPNCountryPickerDeleg
 				let phoneNumber = "+\(example.countryCode.stringValue)\(example.nationalNumber.stringValue)"
 
 				if let inputString = formatter?.inputString(phoneNumber) {
-					placeholder = remove(dialCode: "+\(example.countryCode.stringValue)", in: inputString)
+                    let placeholderText = remove(dialCode: "+\(example.countryCode.stringValue)", in: inputString)
+                    self.attributedPlaceholder = NSAttributedString(string: placeholderText,
+                                                                    attributes: [NSAttributedString.Key.foregroundColor: placeholderColor,
+                                                                                 .font: font])
 				} else {
-					placeholder = nil
+					attributedPlaceholder = nil
 				}
 			} catch _ {
-				placeholder = nil
+				attributedPlaceholder = nil
 			}
 		} else {
-			placeholder = nil
+			attributedPlaceholder = nil
 		}
 	}
 
